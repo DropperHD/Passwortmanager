@@ -1,0 +1,99 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#define masterPIN 1870
+FILE *pw;
+char plattform[30];
+char* line;
+char PW[64];
+int PIN = 0;
+int ifcase;
+int main() {
+    printf("enter your PIN:\n");
+    scanf("%d", &PIN);
+    switch (PIN) {
+        case masterPIN:
+            PIN = 1;
+            break;
+        default:
+            PIN = 0;
+            break;
+    }
+
+    if (PIN == 0) {
+        return 0;
+    }
+    printf("which data want to drop:");
+
+    scanf("%s",plattform);
+    pw = fopen("data.txt", "r");
+    line = fgets(plattform, 20, pw);
+    /*  int i = 0;
+      //while(line[i] != 32){
+          i++;
+  } i+=2;
+      char code [64]; int n = 0;
+      while(line[i-1] != 32){
+          code[n] = line[i];
+          i++;n++;
+      } i++;
+      int Factor = line[i];
+      i+=2;*/
+    char delimiter[] = " ";
+    char *ptr;
+    printf("%s",line);
+    ptr = strtok(line, delimiter);
+    ptr = strtok(NULL, delimiter);
+    char code[64];
+    strcpy(code, ptr);
+    int factor = code[strlen(code)];
+    ptr = strtok(NULL, delimiter);
+    int SID = *ptr;
+    ptr = strtok(NULL, delimiter);
+    int SPW = *ptr;
+    char PW[32];
+    char ID[32];
+    int n = 0;
+
+
+    for (int f = 0; f < strlen(code); f++) {
+        if (SID == SPW) { ifcase = 0; }//case beide gleich lang
+        if (SID > SPW) { ifcase = 1; }//username größer pw
+        if (SID < SPW) { ifcase = 2; }//pw größer username
+    }
+    int help = SPW;
+    switch (ifcase) {
+        case 0:
+            for (int i = 0, x = 0; i < SID; i++) {
+                ID[i] = code[x];
+                PW[i + 1] = code[x + 1];
+                x += 2;
+                break;
+            }
+
+
+        case 1:
+            for (int i = 0; i < strlen(code) - 1; i++) {
+                while (help != 0) {
+                    code[i] = ID[i];
+                    code[i + 1] = PW[i];
+                    help--;
+                    i++;
+                }
+                while (i + SPW <= strlen(code) - 1) {
+                    code[i + SPW] = ID[i];
+                }
+            }
+            break;
+
+
+        case 2:
+            for (int i = 0, x = 0; i < SID; i++) {
+                ID[i] = code[x];
+                PW[i + 1] = code[x + 1];
+                x += 2;
+            }
+            //for(int i=0,x=0;i < SID;i++){
+        break;
+    }
+}
