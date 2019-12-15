@@ -3,12 +3,32 @@
 #include <stdlib.h>
 #define masterPIN 1870
 FILE *pw;
+char string[30];
 char plattform[30];
-char* line;
+char*line;
 char PW[64];
+char ID[32];
+char code[64] ={0};
 int PIN = 0;
-int ifcase;
+int SPW;
+int SID;
+int factor;
+void Pineingabe(),GetPlattform(),openfile(),divideString(),decode(),defactorize(),finaloutput();
+
 int main() {
+   // Pineingabe();
+    GetPlattform();
+    openfile();
+    divideString();
+    defactorize();
+    decode();
+    finaloutput();
+    fclose(pw);
+}
+
+
+
+void Pineingabe() {
     printf("enter your PIN:\n");
     scanf("%d", &PIN);
     switch (PIN) {
@@ -21,79 +41,78 @@ int main() {
     }
 
     if (PIN == 0) {
-        return 0;
+        exit(0);
     }
-    printf("which data want to drop:");
-
-    scanf("%s",plattform);
+}
+void GetPlattform(){
+printf("which data want to drop:");
+scanf("%s", plattform);
+}
+void openfile(){
     pw = fopen("data.txt", "r");
-    line = fgets(plattform, 20, pw);
-    /*  int i = 0;
-      //while(line[i] != 32){
-          i++;
-  } i+=2;
-      char code [64]; int n = 0;
-      while(line[i-1] != 32){
-          code[n] = line[i];
-          i++;n++;
-      } i++;
-      int Factor = line[i];
-      i+=2;*/
-    char delimiter[] = " ";
-    char *ptr;
-    printf("%s",line);
-    ptr = strtok(line, delimiter);
-    ptr = strtok(NULL, delimiter);
-    char code[64];
-    strcpy(code, ptr);
-    int factor = code[strlen(code)];
-    ptr = strtok(NULL, delimiter);
-    int SID = *ptr;
-    ptr = strtok(NULL, delimiter);
-    int SPW = *ptr;
-    char PW[32];
-    char ID[32];
-    int n = 0;
-
-
-    for (int f = 0; f < strlen(code); f++) {
-        if (SID == SPW) { ifcase = 0; }//case beide gleich lang
-        if (SID > SPW) { ifcase = 1; }//username größer pw
-        if (SID < SPW) { ifcase = 2; }//pw größer username
+    if (pw == NULL) {
+        printf("Cannot open file \n");
     }
-    int help = SPW;
-    switch (ifcase) {
-        case 0:
-            for (int i = 0, x = 0; i < SID; i++) {
-                ID[i] = code[x];
-                PW[i + 1] = code[x + 1];
-                x += 2;
+
+    int bool = 0;
+    while(bool == 0) {
+        line = fgets(string, 30, pw);
+        for (int i = 0; i < strlen(plattform); i++) {
+            if (line[i] != plattform[i]) {
                 break;
             }
-
-
-        case 1:
-            for (int i = 0; i < strlen(code) - 1; i++) {
-                while (help != 0) {
-                    code[i] = ID[i];
-                    code[i + 1] = PW[i];
-                    help--;
-                    i++;
-                }
-                while (i + SPW <= strlen(code) - 1) {
-                    code[i + SPW] = ID[i];
-                }
-            }
-            break;
-
-
-        case 2:
-            for (int i = 0, x = 0; i < SID; i++) {
-                ID[i] = code[x];
-                PW[i + 1] = code[x + 1];
-                x += 2;
-            }
-            //for(int i=0,x=0;i < SID;i++){
-        break;
+            bool = 1;
+        }
     }
+    //printf("%s\n", line);
+}
+void divideString(){
+    char *ptr = NULL;
+    ptr = strtok(line, " ");
+    ptr = strtok(NULL, " ");
+    strcpy(code, ptr);
+    //printf("%s\n", code);
+    factor = code[(strlen(code)-1)]-'0';
+    //printf("%d\n",factor);
+    ptr = strtok(NULL, " ");
+    SID = *ptr -'0';
+    //printf("%d\n",SID);
+    ptr = strtok(NULL, " ");
+    SPW = *ptr -'0';
+    //printf("%d\n",SPW);
+
+}
+void decode(){
+    int * larger,*smaller;
+    if (SID >= SPW) { larger = &SID;smaller = &SPW;}//case beide gleich lang //username größer pw
+    else if (SID < SPW) { larger = &SPW;smaller = &SID;}//pw größer username
+    int i =0,x=0;
+    while (i < *smaller) {
+        ID[i] = code[x];
+        PW[i] = code[x + 1];
+        x += 2;
+        i++;
+    }
+
+    char* longers;
+    if(SID>SPW){longers = ID;}
+    if(SID<SPW){longers = PW;}
+
+    while (i < *larger) {
+        longers[i] = code[x];
+        i++;x++;
+    }
+}
+void defactorize(){
+    for(int n = 0;n<strlen(code);n++){
+        code[n] = code[n] - factor;
+
+    }
+}
+
+void finaloutput(){
+    printf("Login: %s\n", ID);
+    printf("Password: %s\n", PW);
+    int useless;
+    scanf("%d",&useless);
 }
