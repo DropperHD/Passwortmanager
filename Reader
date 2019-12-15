@@ -5,7 +5,7 @@
 FILE *pw;
 char string[30];
 char plattform[30];
-char*line;
+char *line;
 char PW[64];
 char ID[32];
 char code[64] ={0};
