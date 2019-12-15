@@ -16,7 +16,7 @@ int factor;
 void Pineingabe(),GetPlattform(),openfile(),divideString(),decode(),defactorize(),finaloutput();
 
 int main() {
-   // Pineingabe();
+    Pineingabe();
     GetPlattform();
     openfile();
     divideString();
