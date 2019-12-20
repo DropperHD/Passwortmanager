@@ -1,28 +1,36 @@
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #define MAX = 25;
 char ID[32]; //username / mail
 char PW[32]; //password
+char platform[32];
 int factor = 26; //parallelverschiebungsfactorchar
 char* mix(char first[],char second[],char *out);
+FILE * data;
 char* factorize(char* x);
 
 int main(){
     char output[63];
+    data = fopen("data.txt","ab");
     setvbuf(stdout, NULL, _IONBF, 0);
+    printf("enter your platform:");
+    scanf("%s",platform);
     printf("enter your indentification (email or username):");
-    fgets(ID, 34, stdin);
+    scanf("%s",ID);
     printf("enter your password:");
-    fgets(PW, 31, stdin);
+    scanf("%s",PW);
     printf("enter your factor (maximum of 25):");
     while(factor > 25){
         scanf("%d", &factor);
     }
     mix(ID,PW,output);
-    printf("%s\n",output);
     factorize(output);
+    printf("%s\n",output);
     printf("%s%d %d,%d",output, factor,strlen(ID)-1,strlen(PW)-1);
+    fputc('\n',data);
+    fprintf(data,"%s %s%d %d %d",platform,output, factor,strlen(ID)-1,strlen(PW)-1);
 };
 
 
@@ -38,23 +46,22 @@ char* mix(char first[],char second[],char *out) {
         longer = second;
         shorter = first;
     }
-    for (int x;shorter[i] != '\n';n+=2,i++) {
+    for (int x;shorter[i] != '\0';n+=2,i++) {
         out[n] = first[i];
         out[n+1] = second[i];
     }
-    while (longer[i] != '\n') {
+    while (longer[i] != '\0') {
         out[n] =longer[i];
         i++; n++;
     }
     return out;
 }
-
 char* factorize(char* x){
     for(int i = 0; i < strlen(x); i++){
         if(x[i] + factor != 127){
-        x[i] = x[i] + factor;
+            x[i] = x[i] + factor;
         } else{
-        x[i] = 169;
+            x[i] = 169;
         }
     }
     return x;
